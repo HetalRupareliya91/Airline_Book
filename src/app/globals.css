@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "react-day-picker/style.css";
+
+:root {
+  --background: #eaf6ff;
+  --foreground: #0f2f4d;
+  --secondary: rgb(51 37 112);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.smart-button {
+  @apply inline-flex items-center justify-center rounded-full bg-[#1691df] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#0f7ec7] hover:shadow-[0_8px_24px_rgba(22,143,218,0.25)];
+}
+
+.smart-ghost-button {
+  @apply inline-flex items-center justify-center rounded-full border border-[#a7d8f8] bg-white/80 px-6 py-3 text-sm font-semibold text-[#0e588b] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1691df];
+}
+
+.smart-link {
+  @apply transition-colors duration-300 hover:text-[#1391de] focus-visible:text-[#1391de];
+}
+
+.glass-panel {
+  @apply rounded-3xl border border-[#a8d8f7] bg-[linear-gradient(145deg,rgba(255,255,255,0.88),rgba(225,242,255,0.85))] backdrop-blur;
+}
+
+.smart-input {
+  @apply w-full rounded-2xl border border-[#b2dcf8] bg-white px-4 py-3.5 text-sm text-[#123c5c] outline-none transition-colors duration-200 placeholder:text-[#80a9c5] focus:border-[#1691df];
+}
+
+.parallax-strip {
+  background-image:
+    linear-gradient(rgba(237, 248, 255, 0.72), rgba(237, 248, 255, 0.9)),
+    url("https://images.unsplash.com/photo-1504198453319-5ce911bafcde?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.heading-kicker {
+  @apply text-xs font-semibold uppercase tracking-[0.2em] text-[#1d7dbd];
+}
+
+.heading-title {
+  @apply text-3xl font-bold leading-tight text-[#0d2f4c] sm:text-4xl lg:text-5xl;
+}
+
+.airline-calendar {
+  --rdp-accent-color: #0f93e4;
+  --rdp-accent-background-color: #e9f6ff;
+  --rdp-day-height: 40px;
+  --rdp-day-width: 40px;
+  margin: 0;
+  min-width: 300px;
+  font-size: 0.95rem;
+}
+
+.airline-calendar .rdp-month_caption {
+  font-weight: 700;
+  color: #0d2942;
+}
+
+.airline-calendar .rdp-weekday {
+  color: #5f88a4;
+  font-weight: 600;
+}
+
+.airline-calendar .rdp-day {
+  border-radius: 10px;
+}
+
+@media (max-width: 767px) {
+  .parallax-strip {
+    background-attachment: scroll;
+  }
+}
