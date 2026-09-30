@@ -38,6 +38,16 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+// Distinct city names, handy for search autocomplete
+router.get("/meta/cities", async (_req, res, next) => {
+  try {
+    const [origins, destinations] = await Promise.all([Flight.distinct("origin"), Flight.distinct("destination")]);
+    return res.json({ ok: true, data: [...new Set([...origins, ...destinations])].sort() });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.get("/:id", async (req, res, next) => {
   try {
     const doc = await Flight.findById(req.params.id);
