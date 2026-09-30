@@ -48,6 +48,9 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/flights", flightRoutes);
+app.use("/api", (_req, res) => {
+  res.status(404).json({ ok: false, error: "NotFound", message: "Unknown API route." });
+});
 app.use((err, _req, res, _next) => {
   // eslint-disable-next-line no-console
   res.status(500).json({
