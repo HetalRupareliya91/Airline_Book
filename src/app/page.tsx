@@ -199,6 +199,12 @@ export default function Home() {
             </div>
           </div>
           <nav className="hidden gap-8 text-sm font-semibold text-[#2d6388] lg:flex">
+            <a href="/flights" className="smart-link">
+              Flights
+            </a>
+            <a href="/bookings" className="smart-link">
+              My Bookings
+            </a>
             <a href="/case-studies" className="smart-link">
               Case Studies
             </a>
@@ -259,6 +265,9 @@ export default function Home() {
               </a>
               <a href="#offers" className="smart-ghost-button">
                 View Flight Deals
+              </a>
+              <a href="/flights" className="smart-button">
+                Search Flights
               </a>
             </div>
           </motion.div>
