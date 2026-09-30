@@ -29,6 +29,7 @@ app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
     service: "server",
+    db: ["disconnected", "connected", "connecting", "disconnecting"][require("mongoose").connection.readyState] ?? "unknown",
     time: new Date().toISOString(),
   });
 });
