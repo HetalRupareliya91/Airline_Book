@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { BookingsPanel, FlightsPanel } from "./AirlinePanels";
 
 type ApiResponse<T> = { ok: boolean; data?: T; message?: string };
 
@@ -27,7 +28,7 @@ type AppointmentRequest = {
   createdAt: string;
 };
 
-type Tab = "appointments" | "contact";
+type Tab = "appointments" | "contact" | "flights" | "bookings";
 
 function formatWhen(iso: string) {
   const dt = new Date(iso);
@@ -87,7 +88,7 @@ export default function AdminPage() {
     void load();
   }, [load]);
 
-  async function updateStatus(kind: Tab, id: string, status: string) {
+  async function updateStatus(kind: "appointments" | "contact", id: string, status: string) {
     setError("");
     try {
       const res = await fetch(`/api/${kind}/${id}`, {
@@ -103,7 +104,7 @@ export default function AdminPage() {
     }
   }
 
-  async function remove(kind: Tab, id: string) {
+  async function remove(kind: "appointments" | "contact", id: string) {
     setError("");
     try {
       const res = await fetch(`/api/${kind}/${id}`, { method: "DELETE" });
@@ -153,11 +154,20 @@ export default function AdminPage() {
           >
             Contact Messages
           </button>
+          <button type="button" onClick={() => setTab("flights")} className={tab === "flights" ? "smart-button" : "smart-ghost-button"}>
+            Flights
+          </button>
+          <button type="button" onClick={() => setTab("bookings")} className={tab === "bookings" ? "smart-button" : "smart-ghost-button"}>
+            Bookings
+          </button>
         </div>
 
         {error ? <p className="mt-5 text-sm font-semibold text-[#b42318]">{error}</p> : null}
 
-        <div className="mt-6 grid gap-4">
+        {tab === "flights" ? <div className="mt-6"><FlightsPanel /></div> : null}
+        {tab === "bookings" ? <div className="mt-6"><BookingsPanel /></div> : null}
+
+        <div className={tab === "flights" || tab === "bookings" ? "hidden" : "mt-6 grid gap-4"}>
           {tab === "appointments"
             ? appointments.map((item) => (
                 <article key={item._id} className="glass-panel p-5 text-[#123e5f]">

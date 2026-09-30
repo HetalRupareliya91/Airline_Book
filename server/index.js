@@ -9,6 +9,8 @@ loadEnv();
 const authRoutes = require("./routes/auth");
 const contactRoutes = require("./routes/contact");
 const appointmentRoutes = require("./routes/appointments");
+const bookingRoutes = require("./routes/bookings");
+const flightRoutes = require("./routes/flights");
 
 const PORT = Number.parseInt(process.env.PORT || "5000", 10);
 
@@ -37,6 +39,8 @@ app.use(async (_req, _res, next) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/flights", flightRoutes);
 app.use((err, _req, res, _next) => {
   // eslint-disable-next-line no-console
   res.status(500).json({
