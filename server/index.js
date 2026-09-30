@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { loadEnv } = require("./lib/env");
 const { connectToDatabase } = require("./lib/db");
+const { createRateLimiter } = require("./lib/rateLimit");
 const { securityHeaders } = require("./lib/securityHeaders");
 const { requestLogger } = require("./lib/requestLogger");
 
@@ -41,7 +42,8 @@ app.use(async (_req, _res, next) => {
   }
 });
 
-app.use("/api/auth", authRoutes);
+const authLimiter = createRateLimiter({ windowMs: 15 * 60_000, max: 30, message: "Too many login attempts, try again later." });
+app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/bookings", bookingRoutes);
