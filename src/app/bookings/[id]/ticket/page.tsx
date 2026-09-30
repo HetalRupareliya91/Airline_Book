@@ -8,6 +8,7 @@ type Booking = {
   reference: string;
   passengers: { name: string }[];
   seats: number;
+  seatNumbers?: string[];
   totalPrice: number;
   status: "confirmed" | "cancelled";
   createdAt: string;
@@ -60,7 +61,9 @@ export default function TicketPage() {
             <div className="mt-6 text-[#123e5f]">
               <p className="text-xs uppercase text-[#5e8aa9]">Passengers ({b.seats})</p>
               <ol className="mt-2 list-decimal pl-5 font-semibold">
-                {b.passengers.map((p, i) => <li key={i}>{p.name}</li>)}
+                {b.passengers.map((p, i) => (
+                  <li key={i}>{p.name}{b.seatNumbers?.[i] ? ` — Seat ${b.seatNumbers[i]}` : ""}</li>
+                ))}
               </ol>
               <p className="mt-6 text-xl font-bold text-[#0f3a59]">Total paid: ₹{b.totalPrice.toLocaleString()}</p>
               <p className="mt-1 text-xs text-[#5e8aa9]">Booked on {new Date(b.createdAt).toLocaleString()}</p>

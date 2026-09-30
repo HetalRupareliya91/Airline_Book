@@ -4,27 +4,52 @@ const express = require("express");
 const Booking = require("../models/Booking");
 const Flight = require("../models/Flight");
 const { requireAuth, requireAdmin } = require("../lib/auth");
+const { seatLabels } = require("../lib/seats");
 
 const router = express.Router();
 
-// Create booking. Seats are reserved atomically so a flight can never be oversold.
+// Create booking. Seats are reserved atomically: a flight can never be oversold and a seat can never be double-booked.
 router.post("/", requireAuth, async (req, res, next) => {
   try {
-    const { flightId, passengers } = req.body ?? {};
+    const { flightId, passengers, seatNumbers: requested } = req.body ?? {};
     const names = Array.isArray(passengers)
       ? passengers.map((p) => String(p?.name ?? p ?? "").trim()).filter(Boolean)
       : [];
-    if (!flightId || names.length < 1 || names.length > 9) {
+    if (!mongoose.isValidObjectId(flightId) || names.length < 1 || names.length > 9) {
       return res.status(400).json({ ok: false, error: "BadRequest", message: "flightId and 1-9 passenger names are required." });
     }
 
+    const current = await Flight.findById(flightId).select("seatsTotal takenSeats");
+    if (!current) return res.status(404).json({ ok: false, error: "NotFound", message: "Flight not found." });
+    const valid = new Set(seatLabels(current.seatsTotal));
+
+    let seatNumbers;
+    if (Array.isArray(requested) && requested.length) {
+      seatNumbers = requested.map((x) => String(x).trim().toUpperCase());
+      if (seatNumbers.length !== names.length || new Set(seatNumbers).size !== seatNumbers.length || !seatNumbers.every((x) => valid.has(x))) {
+        return res.status(400).json({ ok: false, error: "BadRequest", message: "Choose one valid, distinct seat per passenger." });
+      }
+    } else {
+      // no seats chosen: assign the first free ones
+      const taken = new Set(current.takenSeats);
+      seatNumbers = [...valid].filter((x) => !taken.has(x)).slice(0, names.length);
+      if (seatNumbers.length !== names.length) {
+        return res.status(409).json({ ok: false, error: "Conflict", message: "Not enough free seats on this flight." });
+      }
+    }
+
     const flight = await Flight.findOneAndUpdate(
-      { _id: flightId, seatsAvailable: { $gte: names.length }, departAt: { $gt: new Date() } },
-      { $inc: { seatsAvailable: -names.length } },
+      {
+        _id: flightId,
+        seatsAvailable: { $gte: names.length },
+        departAt: { $gt: new Date() },
+        takenSeats: { $nin: seatNumbers },
+      },
+      { $inc: { seatsAvailable: -names.length }, $addToSet: { takenSeats: { $each: seatNumbers } } },
       { new: true },
     );
     if (!flight) {
-      return res.status(409).json({ ok: false, error: "Conflict", message: "Not enough seats, or flight already departed." });
+      return res.status(409).json({ ok: false, error: "Conflict", message: "Those seats were just taken, the flight is full, or it already departed. Please pick again." });
     }
 
     try {
@@ -34,11 +59,12 @@ router.post("/", requireAuth, async (req, res, next) => {
         flight: flight._id,
         passengers: names.map((name) => ({ name })),
         seats: names.length,
+        seatNumbers,
         totalPrice: flight.price * names.length,
       });
       return res.status(201).json({ ok: true, data: doc });
     } catch (err) {
-      await Flight.updateOne({ _id: flight._id }, { $inc: { seatsAvailable: names.length } }); // roll back
+      await Flight.updateOne({ _id: flight._id }, { $inc: { seatsAvailable: names.length }, $pullAll: { takenSeats: seatNumbers } }); // roll back
       throw err;
     }
   } catch (err) {
@@ -85,7 +111,10 @@ router.patch("/:id/cancel", requireAuth, async (req, res, next) => {
     if (req.user.role !== "admin") filter.user = req.user.sub;
     const booking = await Booking.findOneAndUpdate(filter, { status: "cancelled" }, { new: true });
     if (!booking) return res.status(404).json({ ok: false, error: "NotFound", message: "No active booking found." });
-    await Flight.updateOne({ _id: booking.flight }, { $inc: { seatsAvailable: booking.seats } });
+    await Flight.updateOne(
+      { _id: booking.flight },
+      { $inc: { seatsAvailable: booking.seats }, $pullAll: { takenSeats: booking.seatNumbers || [] } },
+    );
     return res.json({ ok: true, data: booking });
   } catch (err) {
     return next(err);

@@ -7,6 +7,7 @@ const BookingSchema = new mongoose.Schema(
     flight: { type: mongoose.Schema.Types.ObjectId, ref: "Flight", required: true, index: true },
     passengers: [{ name: { type: String, trim: true, required: true, maxlength: 200 } }],
     seats: { type: Number, required: true, min: 1, max: 9 },
+    seatNumbers: { type: [String], default: [] },
     totalPrice: { type: Number, required: true, min: 0 },
     status: { type: String, enum: ["confirmed", "cancelled"], default: "confirmed", index: true },
   },
