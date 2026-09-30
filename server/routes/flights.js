@@ -9,7 +9,10 @@ const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 router.get("/", async (req, res, next) => {
   try {
     const { origin, destination, date } = req.query;
-    const q = { seatsAvailable: { $gt: 0 } };
+    const minSeats = Math.max(Number.parseInt(String(req.query.minSeats || "1"), 10) || 1, 1);
+    const q = { seatsAvailable: { $gte: minSeats } };
+    const maxPrice = Number(req.query.maxPrice);
+    if (req.query.maxPrice && Number.isFinite(maxPrice)) q.price = { $lte: maxPrice };
     if (origin) q.origin = new RegExp(esc(origin), "i");
     if (destination) q.destination = new RegExp(esc(destination), "i");
     if (date) {
