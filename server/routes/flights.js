@@ -24,7 +24,9 @@ router.get("/", async (req, res, next) => {
     } else {
       q.departAt = { $gte: new Date() };
     }
-    const data = await Flight.find(q).sort({ departAt: 1 }).limit(100);
+    const SORTS = { price: { price: 1 }, "-price": { price: -1 }, departure: { departAt: 1 }, "-departure": { departAt: -1 } };
+    const sort = SORTS[String(req.query.sort || "")] || SORTS.departure;
+    const data = await Flight.find(q).sort(sort).limit(100);
     return res.json({ ok: true, data });
   } catch (err) {
     return next(err);
