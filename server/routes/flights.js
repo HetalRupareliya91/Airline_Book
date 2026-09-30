@@ -81,6 +81,25 @@ router.post("/", requireAdmin, async (req, res, next) => {
   }
 });
 
+router.patch("/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const flight = await Flight.findById(req.params.id);
+    if (!flight) return res.status(404).json({ ok: false, error: "NotFound" });
+    const { price, departAt, arriveAt } = req.body ?? {};
+    if (price != null) {
+      if (!Number.isFinite(Number(price)) || Number(price) < 0) return res.status(400).json({ ok: false, error: "BadRequest", message: "price must be a non-negative number." });
+      flight.price = Number(price);
+    }
+    if (departAt) flight.departAt = new Date(departAt);
+    if (arriveAt) flight.arriveAt = new Date(arriveAt);
+    if (flight.arriveAt <= flight.departAt) return res.status(400).json({ ok: false, error: "BadRequest", message: "arriveAt must be after departAt." });
+    await flight.save();
+    return res.json({ ok: true, data: flight });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
     const deleted = await Flight.findByIdAndDelete(req.params.id);
