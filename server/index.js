@@ -53,9 +53,10 @@ app.use("/api", (_req, res) => {
 });
 app.use((err, _req, res, _next) => {
   // eslint-disable-next-line no-console
-  res.status(500).json({
+  const status = err?.name === "ValidationError" || err?.name === "CastError" ? 400 : 500;
+  res.status(status).json({
     ok: false,
-    error: "InternalServerError",
+    error: status === 400 ? "BadRequest" : "InternalServerError",
     message: err instanceof Error ? err.message : "Unknown error",
   });
 });
