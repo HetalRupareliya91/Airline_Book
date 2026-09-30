@@ -57,9 +57,12 @@ export default function BookingsPage() {
                   ₹{b.totalPrice.toLocaleString()} · {b.status}
                 </p>
               </div>
-              {b.status === "confirmed" ? (
-                <button className="smart-ghost-button" onClick={() => void cancel(b._id)}>Cancel</button>
-              ) : null}
+              <div className="flex gap-2">
+                <Link href={`/bookings/${b._id}/ticket`} className="smart-ghost-button">View ticket</Link>
+                {b.status === "confirmed" ? (
+                  <button className="smart-ghost-button" onClick={() => void cancel(b._id)}>Cancel</button>
+                ) : null}
+              </div>
             </article>
           ))}
           {items.length === 0 && !error ? <p className="text-sm text-[#416b8a]">No bookings yet.</p> : null}
