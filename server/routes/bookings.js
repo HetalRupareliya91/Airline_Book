@@ -109,6 +109,13 @@ router.patch("/:id/cancel", requireAuth, async (req, res, next) => {
   try {
     const filter = { _id: req.params.id, status: "confirmed" };
     if (req.user.role !== "admin") filter.user = req.user.sub;
+    if (req.user.role !== "admin") {
+      const existing = await Booking.findOne(filter).populate("flight", "departAt");
+      const hours = Number(process.env.CANCEL_CUTOFF_HOURS ?? 2);
+      if (existing?.flight && existing.flight.departAt.getTime() - Date.now() < hours * 3_600_000) {
+        return res.status(403).json({ ok: false, error: "Forbidden", message: `Bookings cannot be cancelled within ${hours} hours of departure.` });
+      }
+    }
     const booking = await Booking.findOneAndUpdate(filter, { status: "cancelled" }, { new: true });
     if (!booking) return res.status(404).json({ ok: false, error: "NotFound", message: "No active booking found." });
     await Flight.updateOne(
