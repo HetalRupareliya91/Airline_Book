@@ -34,9 +34,9 @@ export default function BookPage() {
         body: JSON.stringify({ flightId: id, passengers: names.map((name) => ({ name })) }),
       });
       if (res.status === 401) return router.push("/login");
-      const json = (await res.json()) as { ok: boolean; message?: string };
+      const json = (await res.json()) as { ok: boolean; data?: { _id: string }; message?: string };
       if (!res.ok || !json.ok) throw new Error(json.message || "Booking failed.");
-      router.push("/bookings");
+      router.push(json.data?._id ? `/bookings/${json.data._id}/ticket` : "/bookings");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {

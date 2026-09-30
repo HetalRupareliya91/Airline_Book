@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const mongoose = require("mongoose");
 const express = require("express");
 const Booking = require("../models/Booking");
 const Flight = require("../models/Flight");
@@ -49,6 +50,19 @@ router.get("/mine", requireAuth, async (req, res, next) => {
   try {
     const data = await Booking.find({ user: req.user.sub }).populate("flight").sort({ createdAt: -1 });
     return res.json({ ok: true, data });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/:id", requireAuth, async (req, res, next) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ ok: false, error: "NotFound" });
+    const filter = { _id: req.params.id };
+    if (req.user.role !== "admin") filter.user = req.user.sub;
+    const doc = await Booking.findOne(filter).populate("flight");
+    if (!doc) return res.status(404).json({ ok: false, error: "NotFound" });
+    return res.json({ ok: true, data: doc });
   } catch (err) {
     return next(err);
   }
