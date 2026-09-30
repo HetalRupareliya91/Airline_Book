@@ -8,6 +8,7 @@
     "dev:server": "node server/index.js",
     "build": "next build",
     "start": "next start",
+    "seed": "node server/scripts/seed-flights.js",
     "lint": "eslint",
     "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true});require('fs').rmSync('out',{recursive:true,force:true})\""
   },
