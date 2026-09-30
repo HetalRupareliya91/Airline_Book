@@ -3,6 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { loadEnv } = require("./lib/env");
 const { connectToDatabase } = require("./lib/db");
+const { securityHeaders } = require("./lib/securityHeaders");
 const { requestLogger } = require("./lib/requestLogger");
 
 loadEnv();
@@ -16,6 +17,8 @@ const flightRoutes = require("./routes/flights");
 const PORT = Number.parseInt(process.env.PORT || "5000", 10);
 
 const app = express();
+app.disable("x-powered-by");
+app.use(securityHeaders);
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
