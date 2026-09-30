@@ -2,15 +2,27 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-type Flight = { flightNumber: string; origin: string; destination: string; departAt: string; price: number; seatsAvailable: number };
+type Flight = {
+  flightNumber: string;
+  origin: string;
+  destination: string;
+  departAt: string;
+  price: number;
+  seatsAvailable: number;
+  seatsTotal: number;
+  takenSeats?: string[];
+};
+
+const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 export default function BookPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [flight, setFlight] = useState<Flight | null>(null);
   const [names, setNames] = useState<string[]>([""]);
+  const [picked, setPicked] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -23,15 +35,29 @@ export default function BookPage() {
     })();
   }, [id]);
 
+  const taken = useMemo(() => new Set(flight?.takenSeats ?? []), [flight]);
+  const rows = flight ? Math.ceil(flight.seatsTotal / 6) : 0;
+  const exists = (r: number, l: number) => (r - 1) * 6 + l < (flight?.seatsTotal ?? 0);
+
+  function changeCount(next: string[]) {
+    setNames(next);
+    setPicked((p) => p.slice(0, next.length));
+  }
+
+  function toggle(seat: string) {
+    setPicked((p) => (p.includes(seat) ? p.filter((s) => s !== seat) : p.length < names.length ? [...p, seat] : p));
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (picked.length !== names.length) return setError(`Please select ${names.length} seat(s) on the map.`);
     setBusy(true);
     setError("");
     try {
       const res = await fetch("/api/bookings", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ flightId: id, passengers: names.map((name) => ({ name })) }),
+        body: JSON.stringify({ flightId: id, passengers: names.map((name) => ({ name })), seatNumbers: picked }),
       });
       if (res.status === 401) return router.push("/login");
       const json = (await res.json()) as { ok: boolean; data?: { _id: string }; message?: string };
@@ -62,23 +88,71 @@ export default function BookPage() {
 
         <form onSubmit={submit} className="mt-6 grid gap-3">
           {names.map((n, i) => (
-            <input
-              key={i}
-              className="smart-input"
-              placeholder={`Passenger ${i + 1} full name`}
-              required
-              value={n}
-              onChange={(e) => setNames(names.map((x, j) => (j === i ? e.target.value : x)))}
-            />
+            <div key={i} className="flex items-center gap-2">
+              <input
+                className="smart-input flex-1"
+                placeholder={`Passenger ${i + 1} full name`}
+                required
+                value={n}
+                onChange={(e) => changeCount(names.map((x, j) => (j === i ? e.target.value : x)))}
+              />
+              <span className="w-12 text-center text-sm font-bold text-[#0f3a59]">{picked[i] ?? "—"}</span>
+            </div>
           ))}
           <div className="flex gap-3">
-            <button type="button" className="smart-ghost-button" disabled={names.length >= max} onClick={() => setNames([...names, ""])}>
+            <button type="button" className="smart-ghost-button" disabled={names.length >= max} onClick={() => changeCount([...names, ""])}>
               + Add passenger
             </button>
-            <button type="button" className="smart-ghost-button" disabled={names.length <= 1} onClick={() => setNames(names.slice(0, -1))}>
+            <button type="button" className="smart-ghost-button" disabled={names.length <= 1} onClick={() => changeCount(names.slice(0, -1))}>
               Remove
             </button>
           </div>
+
+          {flight ? (
+            <div className="mt-2">
+              <p className="mb-2 text-sm font-semibold text-[#2f6388]">
+                Pick {names.length} seat{names.length > 1 ? "s" : ""} ({picked.length} selected)
+              </p>
+              <div className="max-h-72 overflow-y-auto rounded-2xl border border-[#a9d8f7] bg-white/70 p-3">
+                <div className="mb-1 grid grid-cols-[2rem_repeat(3,1fr)_1rem_repeat(3,1fr)] gap-1 text-center text-xs font-bold text-[#5e8aa9]">
+                  <span />
+                  {LETTERS.slice(0, 3).map((l) => <span key={l}>{l}</span>)}
+                  <span />
+                  {LETTERS.slice(3).map((l) => <span key={l}>{l}</span>)}
+                </div>
+                {Array.from({ length: rows }, (_, r) => r + 1).map((row) => (
+                  <div key={row} className="mb-1 grid grid-cols-[2rem_repeat(3,1fr)_1rem_repeat(3,1fr)] items-center gap-1">
+                    <span className="text-center text-xs text-[#5e8aa9]">{row}</span>
+                    {LETTERS.map((l, li) => {
+                      const seat = `${row}${l}`;
+                      const cell = !exists(row, li) ? (
+                        <span key={seat} />
+                      ) : (
+                        <button
+                          key={seat}
+                          type="button"
+                          disabled={taken.has(seat)}
+                          onClick={() => toggle(seat)}
+                          className={`rounded-md py-1 text-xs font-semibold transition ${
+                            taken.has(seat)
+                              ? "cursor-not-allowed bg-[#d0d5dd] text-[#98a2b3]"
+                              : picked.includes(seat)
+                                ? "bg-[#1492df] text-white"
+                                : "bg-[#e1f2ff] text-[#0f3a59] hover:bg-[#c8ebff]"
+                          }`}
+                        >
+                          {seat}
+                        </button>
+                      );
+                      return li === 2 ? [cell, <span key={`a${row}`} />] : cell;
+                    })}
+                  </div>
+                ))}
+              </div>
+              <p className="mt-1 text-xs text-[#5e8aa9]">Grey = taken · Blue = your selection</p>
+            </div>
+          ) : null}
+
           <button className="smart-button w-full" type="submit" disabled={busy || !flight}>
             {busy ? "Booking..." : "Confirm booking"}
           </button>
