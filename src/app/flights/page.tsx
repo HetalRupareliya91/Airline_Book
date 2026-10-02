@@ -155,6 +155,20 @@ export default function FlightsPage() {
           {!loading && flights.length === 0 ? <p className="text-sm text-[#416b8a]">No flights found.</p> : null}
         </div>
 
+        {pages > 1 ? (
+          <div className="mt-6 flex items-center justify-center gap-4 text-sm text-[#2f6388]">
+            <button className="smart-ghost-button" disabled={page <= 1 || loading} onClick={() => setPage(page - 1)}>
+              Previous
+            </button>
+            <span>
+              Page {page} of {pages}
+            </span>
+            <button className="smart-ghost-button" disabled={page >= pages || loading} onClick={() => setPage(page + 1)}>
+              Next
+            </button>
+          </div>
+        ) : null}
+
         <div className="mt-6 flex gap-3">
           <Link href="/bookings" className="smart-ghost-button">My bookings</Link>
           <Link href="/" className="smart-ghost-button">Back to Home</Link>
