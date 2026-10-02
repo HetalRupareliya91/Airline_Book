@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const { signToken, setAuthCookie, clearAuthCookie, requireAuth } = require("../lib/auth");
+const { isEmail, isPassword } = require("../lib/validators");
 
 const router = express.Router();
 
@@ -11,10 +12,13 @@ router.post("/register", async (req, res, next) => {
     if (!email || !password) {
       return res.status(400).json({ ok: false, error: "BadRequest", message: "email and password are required." });
     }
-    if (String(password).length < 6) {
-      return res.status(400).json({ ok: false, error: "BadRequest", message: "password must be at least 6 characters." });
+    if (!isPassword(password)) {
+      return res.status(400).json({ ok: false, error: "BadRequest", message: "password must be 6-72 characters." });
     }
 
+    if (!isEmail(email)) {
+      return res.status(400).json({ ok: false, error: "BadRequest", message: "email is not valid." });
+    }
     const normalizedEmail = String(email).trim().toLowerCase();
     const existing = await User.findOne({ email: normalizedEmail });
     if (existing) {
