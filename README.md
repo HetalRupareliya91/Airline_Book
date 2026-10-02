@@ -19,6 +19,7 @@ The first account you register becomes the admin.
 | `npm run dev:web` / `npm run dev:server` | Only one of them |
 | `npm run build` / `npm start` | Production build and start |
 | `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript type check |
 | `npm test` | Server unit tests (node:test) |
 | `npm run seed` | Add sample flights for the next 14 days |
 | `npm run seed:clear` | Remove sample flights that have no bookings |
