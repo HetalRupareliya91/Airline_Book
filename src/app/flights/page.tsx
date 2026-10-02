@@ -135,7 +135,7 @@ export default function FlightsPage() {
           </button>
         </div>
 
-        {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
+        {error ? <p role="alert" className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
 
         <div className={`mt-6 grid gap-4 ${loading ? "opacity-60" : ""}`}>
           {flights.map((f) => (
