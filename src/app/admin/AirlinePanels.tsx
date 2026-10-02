@@ -50,6 +50,21 @@ export function FlightsPanel() {
     await load();
   }
 
+  async function editPrice(f: Flight) {
+    const input = window.prompt(`New price for ${f.flightNumber} (₹)`, String(f.price));
+    if (input === null) return;
+    const price = Number(input);
+    if (!Number.isFinite(price) || price < 0) return setError("Enter a valid price.");
+    const res = await fetch(`/api/flights/${f._id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ price }),
+    });
+    const json = (await res.json()) as Api<Flight>;
+    if (!res.ok || !json.ok) return setError(json.message || "Update failed.");
+    await load();
+  }
+
   const set = (k: keyof typeof empty) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: e.target.value });
 
   return (
