@@ -73,6 +73,16 @@ export default function TicketPage() {
 
             <div className="mt-8 flex flex-wrap gap-3 print:hidden">
               <button className="smart-button" onClick={() => window.print()}>Print / Save as PDF</button>
+              <button
+                className="smart-ghost-button"
+                onClick={() => {
+                  void navigator.clipboard.writeText(b.reference);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1500);
+                }}
+              >
+                {copied ? "Copied!" : "Copy reference"}
+              </button>
               <Link href="/bookings" className="smart-ghost-button">My bookings</Link>
               <Link href="/flights" className="smart-ghost-button">Search flights</Link>
             </div>
