@@ -86,7 +86,10 @@ export function FlightsPanel() {
             <p className="text-lg font-bold text-[#0f3a59]">{f.flightNumber} · {f.origin} → {f.destination}</p>
             <p className="text-sm text-[#416b8a]">{new Date(f.departAt).toLocaleString()} · ₹{f.price} · {f.seatsAvailable}/{f.seatsTotal} seats</p>
           </div>
-          <button className="smart-ghost-button" onClick={() => void remove(f._id)}>Delete</button>
+          <div className="flex gap-2">
+            <button className="smart-ghost-button" onClick={() => void editPrice(f)}>Edit price</button>
+            <button className="smart-ghost-button" onClick={() => void remove(f._id)}>Delete</button>
+          </div>
         </article>
       ))}
       {items.length === 0 ? <p className="text-sm text-[#416b8a]">No upcoming flights yet.</p> : null}
