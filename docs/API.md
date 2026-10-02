@@ -20,7 +20,7 @@ Auth uses an httpOnly `token` cookie set by login/register.
 - `GET /api/bookings/mine` - your bookings.
 - `GET /api/bookings/:id` - one booking (owner or admin).
 - `PATCH /api/bookings/:id/cancel` - owner or admin. Users cannot cancel within `CANCEL_CUTOFF_HOURS` (default 2) of departure.
-- `GET /api/bookings` - admin, all bookings.
+- `GET /api/bookings` - admin, all bookings. Query: `status` (confirmed or cancelled), `page`, `limit`. Returns `meta`.
 
 ## Health
 - `GET /api/health` - service and database status.
