@@ -139,6 +139,11 @@ export default function FlightsPage() {
 
         {error ? <p role="alert" className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
 
+        {!loading && !error ? (
+          <p className="mt-4 text-sm text-[#416b8a]">
+            {total} flight{total === 1 ? "" : "s"} found
+          </p>
+        ) : null}
         <div className={`mt-6 grid gap-4 ${loading ? "opacity-60" : ""}`}>
           {flights.map((f) => (
             <article key={f._id} className="glass-panel flex flex-wrap items-center justify-between gap-4 p-5 text-[#123e5f]">
