@@ -24,6 +24,7 @@ export default function FlightsPage() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cities, setCities] = useState<string[]>([]);
 
   const search = useCallback(async () => {
     setLoading(true);
@@ -50,6 +51,18 @@ export default function FlightsPage() {
     void search();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sort]);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const res = await fetch("/api/flights/meta/cities");
+        const json = (await res.json()) as { ok: boolean; data?: string[] };
+        if (json.ok && json.data) setCities(json.data);
+      } catch {
+        // suggestions are optional
+      }
+    })();
+  }, []);
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,#c8ebff_0%,#eaf6ff_45%,#f4fbff_100%)] px-6 py-12 sm:px-10 lg:px-20">
