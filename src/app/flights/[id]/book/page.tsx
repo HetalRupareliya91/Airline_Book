@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { formatINR } from "@/lib/format";
 
 type Flight = {
   flightNumber: string;
@@ -81,8 +82,7 @@ export default function BookPage() {
         </h1>
         {flight ? (
           <p className="mt-2 text-[#2f6388]">
-            {flight.flightNumber} · ₹{flight.price.toLocaleString()} per seat · Total ₹
-            {(flight.price * names.length).toLocaleString()}
+            {flight.flightNumber} · {formatINR(flight.price)} per seat · Total {formatINR(flight.price * names.length)}
           </p>
         ) : null}
 
