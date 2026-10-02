@@ -5,6 +5,7 @@ const Booking = require("../models/Booking");
 const Flight = require("../models/Flight");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 const { seatLabels } = require("../lib/seats");
+const { parsePassengerNames } = require("../lib/passengers");
 
 const router = express.Router();
 
@@ -12,9 +13,7 @@ const router = express.Router();
 router.post("/", requireAuth, async (req, res, next) => {
   try {
     const { flightId, passengers, seatNumbers: requested } = req.body ?? {};
-    const names = Array.isArray(passengers)
-      ? passengers.map((p) => String(p?.name ?? p ?? "").trim()).filter(Boolean)
-      : [];
+    const names = parsePassengerNames(passengers);
     if (!mongoose.isValidObjectId(flightId) || names.length < 1 || names.length > 9) {
       return res.status(400).json({ ok: false, error: "BadRequest", message: "flightId and 1-9 passenger names are required." });
     }
