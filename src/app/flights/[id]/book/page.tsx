@@ -51,6 +51,7 @@ export default function BookPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (names.some((n) => n.trim().length < 2)) return setError("Enter each passenger's full name.");
     if (picked.length !== names.length) return setError(`Please select ${names.length} seat(s) on the map.`);
     setBusy(true);
     setError("");
