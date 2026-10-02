@@ -70,6 +70,18 @@ export default function FlightsPage() {
           </button>
         </form>
 
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-[#2f6388]">
+          <label className="flex items-center gap-2">
+            Sort by
+            <select className="smart-input" value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value="departure">Earliest departure</option>
+              <option value="-departure">Latest departure</option>
+              <option value="price">Lowest price</option>
+              <option value="-price">Highest price</option>
+            </select>
+          </label>
+        </div>
+
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
 
         <div className="mt-6 grid gap-4">
