@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { formatDateTime, formatINR } from "@/lib/format";
+import { apiJson } from "@/lib/api";
 
 type Booking = {
   _id: string;
@@ -20,10 +21,9 @@ export default function BookingsPage() {
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/bookings/mine");
-    const json = (await res.json()) as { ok: boolean; data?: Booking[]; message?: string };
-    if (!res.ok || !json.ok) return setError(json.message || "Failed to load bookings.");
-    setItems(json.data || []);
+    const { body } = await apiJson<Booking[]>("/api/bookings/mine");
+    if (!body.ok) return setError(body.message || "Failed to load bookings.");
+    setItems(body.data || []);
   }, []);
 
   useEffect(() => {
@@ -32,9 +32,8 @@ export default function BookingsPage() {
 
   async function cancel(id: string) {
     setError("");
-    const res = await fetch(`/api/bookings/${id}/cancel`, { method: "PATCH" });
-    const json = (await res.json()) as { ok: boolean; message?: string };
-    if (!res.ok || !json.ok) return setError(json.message || "Cancel failed.");
+    const { body } = await apiJson<Booking>(`/api/bookings/${id}/cancel`, { method: "PATCH" });
+    if (!body.ok) return setError(body.message || "Cancel failed.");
     await load();
   }
 
