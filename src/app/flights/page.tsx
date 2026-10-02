@@ -23,6 +23,7 @@ export default function FlightsPage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
+  const [total, setTotal] = useState(0);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,10 +43,11 @@ export default function FlightsPage() {
       qs.set("limit", "20");
       if (maxPrice) qs.set("maxPrice", maxPrice);
       const res = await fetch(`/api/flights?${qs.toString()}`);
-      const json = (await res.json()) as { ok: boolean; data?: Flight[]; meta?: { pages: number }; message?: string };
+      const json = (await res.json()) as { ok: boolean; data?: Flight[]; meta?: { pages: number; total: number }; message?: string };
       if (!res.ok || !json.ok) throw new Error(json.message || "Search failed.");
       setFlights(json.data || []);
       setPages(json.meta?.pages ?? 1);
+      setTotal(json.meta?.total ?? (json.data || []).length);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -137,6 +139,11 @@ export default function FlightsPage() {
 
         {error ? <p role="alert" className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
 
+        {!loading && !error ? (
+          <p className="mt-4 text-sm text-[#416b8a]">
+            {total} flight{total === 1 ? "" : "s"} found
+          </p>
+        ) : null}
         <div className={`mt-6 grid gap-4 ${loading ? "opacity-60" : ""}`}>
           {flights.map((f) => (
             <article key={f._id} className="glass-panel flex flex-wrap items-center justify-between gap-4 p-5 text-[#123e5f]">
