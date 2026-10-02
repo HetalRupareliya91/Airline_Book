@@ -45,6 +45,7 @@ export function FlightsPanel() {
   }
 
   async function remove(id: string) {
+    if (!window.confirm("Delete this flight? Existing bookings keep their record.")) return;
     await fetch(`/api/flights/${id}`, { method: "DELETE" });
     await load();
   }
