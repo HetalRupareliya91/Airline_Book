@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { downloadTicketIcs } from "@/lib/ics";
 import { formatINR } from "@/lib/format";
 
 type Booking = {
@@ -82,6 +83,9 @@ export default function TicketPage() {
                 }}
               >
                 {copied ? "Copied!" : "Copy reference"}
+              </button>
+              <button className="smart-ghost-button" onClick={() => downloadTicketIcs(b)}>
+                Add to calendar
               </button>
               <Link href="/bookings" className="smart-ghost-button">My bookings</Link>
               <Link href="/flights" className="smart-ghost-button">Search flights</Link>
