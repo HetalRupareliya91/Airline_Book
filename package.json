@@ -11,6 +11,7 @@
     "seed": "node server/scripts/seed-flights.js",
     "seed:clear": "node server/scripts/clear-seed-flights.js",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test": "node --test",
     "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true});require('fs').rmSync('out',{recursive:true,force:true})\""
   },
