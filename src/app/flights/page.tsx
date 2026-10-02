@@ -82,6 +82,10 @@ export default function FlightsPage() {
               <option value="-price">Highest price</option>
             </select>
           </label>
+          <label className="flex items-center gap-2">
+            Max price ₹
+            <input className="smart-input w-28" type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+          </label>
         </div>
 
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
