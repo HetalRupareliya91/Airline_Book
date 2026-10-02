@@ -113,6 +113,10 @@ export function BookingsPanel() {
 
   return (
     <div className="grid gap-4">
+      <p className="text-sm font-semibold text-[#2f6388]">
+        {items.filter((b) => b.status === "confirmed").length} confirmed · Revenue ₹
+        {items.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + b.totalPrice, 0).toLocaleString("en-IN")}
+      </p>
       {items.map((b) => (
         <article key={b._id} className="glass-panel flex flex-wrap items-start justify-between gap-3 p-5 text-[#123e5f]">
           <div>
