@@ -19,6 +19,8 @@ type Booking = {
 export default function BookingsPage() {
   const [items, setItems] = useState<Booking[]>([]);
   const [error, setError] = useState("");
+  const [tab, setTab] = useState<"all" | "upcoming" | "cancelled">("all");
+  const [now] = useState(() => Date.now());
 
   const load = useCallback(async () => {
     const { body } = await apiJson<Booking[]>("/api/bookings/mine");
@@ -37,14 +39,25 @@ export default function BookingsPage() {
     await load();
   }
 
+  const visible = items.filter((b) =>
+    tab === "all" ? true : tab === "cancelled" ? b.status === "cancelled" : b.status === "confirmed" && !!b.flight && new Date(b.flight.departAt).getTime() > now,
+  );
+
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,#c8ebff_0%,#eaf6ff_45%,#f4fbff_100%)] px-6 py-12 sm:px-10 lg:px-20">
       <div className="mx-auto w-full max-w-5xl rounded-[2rem] border border-[#a9d8f7] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(225,242,255,0.88))] p-7 md:p-10">
         <p className="heading-kicker">Account</p>
         <h1 className="mt-2 text-4xl font-bold text-[#0d2f4c]">My bookings</h1>
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
+        <div className="mt-6 flex gap-2">
+          {(["all", "upcoming", "cancelled"] as const).map((t) => (
+            <button key={t} className={tab === t ? "smart-button" : "smart-ghost-button"} onClick={() => setTab(t)}>
+              {t[0].toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
         <div className="mt-6 grid gap-4">
-          {items.map((b) => (
+          {visible.map((b) => (
             <article key={b._id} className="glass-panel flex flex-wrap items-start justify-between gap-3 p-5 text-[#123e5f]">
               <div>
                 <p className="text-lg font-bold text-[#0f3a59]">
@@ -69,7 +82,7 @@ export default function BookingsPage() {
               </div>
             </article>
           ))}
-          {items.length === 0 && !error ? <p className="text-sm text-[#416b8a]">
+          {visible.length === 0 && !error ? <p className="text-sm text-[#416b8a]">
               No bookings yet.{" "}
               <Link href="/flights" className="font-semibold underline">Find a flight</Link>
             </p> : null}
