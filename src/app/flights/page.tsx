@@ -21,6 +21,8 @@ export default function FlightsPage() {
   const [date, setDate] = useState("");
   const [sort, setSort] = useState("departure");
   const [maxPrice, setMaxPrice] = useState("");
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,22 +38,25 @@ export default function FlightsPage() {
       if (destination) qs.set("destination", destination);
       if (date) qs.set("date", date);
       qs.set("sort", sort);
+      qs.set("page", String(page));
+      qs.set("limit", "20");
       if (maxPrice) qs.set("maxPrice", maxPrice);
       const res = await fetch(`/api/flights?${qs.toString()}`);
-      const json = (await res.json()) as { ok: boolean; data?: Flight[]; message?: string };
+      const json = (await res.json()) as { ok: boolean; data?: Flight[]; meta?: { pages: number }; message?: string };
       if (!res.ok || !json.ok) throw new Error(json.message || "Search failed.");
       setFlights(json.data || []);
+      setPages(json.meta?.pages ?? 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
     }
-  }, [origin, destination, date, sort, maxPrice]);
+  }, [origin, destination, date, sort, maxPrice, page]);
 
   useEffect(() => {
     void search();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort, tick]);
+  }, [sort, tick, page]);
 
   useEffect(() => {
     void (async () => {
@@ -74,7 +79,8 @@ export default function FlightsPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void search();
+            if (page !== 1) setPage(1);
+            else void search();
           }}
           className="mt-6 grid gap-3 sm:grid-cols-4"
         >
@@ -95,7 +101,10 @@ export default function FlightsPage() {
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-[#2f6388]">
           <label className="flex items-center gap-2">
             Sort by
-            <select className="smart-input" value={sort} onChange={(e) => setSort(e.target.value)}>
+            <select className="smart-input" value={sort} onChange={(e) => {
+                setSort(e.target.value);
+                setPage(1);
+              }}>
               <option value="departure">Earliest departure</option>
               <option value="-departure">Latest departure</option>
               <option value="price">Lowest price</option>
@@ -115,6 +124,7 @@ export default function FlightsPage() {
               setDate("");
               setMaxPrice("");
               setSort("departure");
+              setPage(1);
               setTick((t) => t + 1);
             }}
           >
@@ -149,6 +159,20 @@ export default function FlightsPage() {
           ))}
           {!loading && flights.length === 0 ? <p className="text-sm text-[#416b8a]">No flights found.</p> : null}
         </div>
+
+        {pages > 1 ? (
+          <div className="mt-6 flex items-center justify-center gap-4 text-sm text-[#2f6388]">
+            <button className="smart-ghost-button" disabled={page <= 1 || loading} onClick={() => setPage(page - 1)}>
+              Previous
+            </button>
+            <span>
+              Page {page} of {pages}
+            </span>
+            <button className="smart-ghost-button" disabled={page >= pages || loading} onClick={() => setPage(page + 1)}>
+              Next
+            </button>
+          </div>
+        ) : null}
 
         <div className="mt-6 flex gap-3">
           <Link href="/bookings" className="smart-ghost-button">My bookings</Link>
