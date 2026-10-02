@@ -20,6 +20,7 @@ export default function FlightsPage() {
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState("");
   const [sort, setSort] = useState("departure");
+  const [maxPrice, setMaxPrice] = useState("");
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,6 +34,7 @@ export default function FlightsPage() {
       if (destination) qs.set("destination", destination);
       if (date) qs.set("date", date);
       qs.set("sort", sort);
+      if (maxPrice) qs.set("maxPrice", maxPrice);
       const res = await fetch(`/api/flights?${qs.toString()}`);
       const json = (await res.json()) as { ok: boolean; data?: Flight[]; message?: string };
       if (!res.ok || !json.ok) throw new Error(json.message || "Search failed.");
@@ -42,7 +44,7 @@ export default function FlightsPage() {
     } finally {
       setLoading(false);
     }
-  }, [origin, destination, date, sort]);
+  }, [origin, destination, date, sort, maxPrice]);
 
   useEffect(() => {
     void search();
@@ -79,6 +81,10 @@ export default function FlightsPage() {
               <option value="price">Lowest price</option>
               <option value="-price">Highest price</option>
             </select>
+          </label>
+          <label className="flex items-center gap-2">
+            Max price ₹
+            <input className="smart-input w-28" type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
           </label>
         </div>
 
