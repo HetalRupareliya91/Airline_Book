@@ -65,12 +65,15 @@ export default function BookingsPage() {
               <div className="flex gap-2">
                 <Link href={`/bookings/${b._id}/ticket`} className="smart-ghost-button">View ticket</Link>
                 {b.status === "confirmed" ? (
-                  <button className="smart-ghost-button" onClick={() => void cancel(b._id)}>Cancel</button>
+                  <button className="smart-ghost-button" onClick={() => window.confirm("Cancel this booking? Your seats will be released.") && void cancel(b._id)}>Cancel</button>
                 ) : null}
               </div>
             </article>
           ))}
-          {items.length === 0 && !error ? <p className="text-sm text-[#416b8a]">No bookings yet.</p> : null}
+          {items.length === 0 && !error ? <p className="text-sm text-[#416b8a]">
+              No bookings yet.{" "}
+              <Link href="/flights" className="font-semibold underline">Find a flight</Link>
+            </p> : null}
         </div>
         <Link href="/flights" className="smart-button mt-6 inline-block">Search flights</Link>
       </div>
