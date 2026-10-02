@@ -45,7 +45,23 @@ export function FlightsPanel() {
   }
 
   async function remove(id: string) {
+    if (!window.confirm("Delete this flight? Existing bookings keep their record.")) return;
     await fetch(`/api/flights/${id}`, { method: "DELETE" });
+    await load();
+  }
+
+  async function editPrice(f: Flight) {
+    const input = window.prompt(`New price for ${f.flightNumber} (₹)`, String(f.price));
+    if (input === null) return;
+    const price = Number(input);
+    if (!Number.isFinite(price) || price < 0) return setError("Enter a valid price.");
+    const res = await fetch(`/api/flights/${f._id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ price }),
+    });
+    const json = (await res.json()) as Api<Flight>;
+    if (!res.ok || !json.ok) return setError(json.message || "Update failed.");
     await load();
   }
 
@@ -70,7 +86,10 @@ export function FlightsPanel() {
             <p className="text-lg font-bold text-[#0f3a59]">{f.flightNumber} · {f.origin} → {f.destination}</p>
             <p className="text-sm text-[#416b8a]">{new Date(f.departAt).toLocaleString()} · ₹{f.price} · {f.seatsAvailable}/{f.seatsTotal} seats</p>
           </div>
-          <button className="smart-ghost-button" onClick={() => void remove(f._id)}>Delete</button>
+          <div className="flex gap-2">
+            <button className="smart-ghost-button" onClick={() => void editPrice(f)}>Edit price</button>
+            <button className="smart-ghost-button" onClick={() => void remove(f._id)}>Delete</button>
+          </div>
         </article>
       ))}
       {items.length === 0 ? <p className="text-sm text-[#416b8a]">No upcoming flights yet.</p> : null}
