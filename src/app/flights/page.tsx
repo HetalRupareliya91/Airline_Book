@@ -106,6 +106,20 @@ export default function FlightsPage() {
             Max price ₹
             <input className="smart-input w-28" type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
           </label>
+          <button
+            type="button"
+            className="smart-ghost-button"
+            onClick={() => {
+              setOrigin("");
+              setDestination("");
+              setDate("");
+              setMaxPrice("");
+              setSort("departure");
+              setTick((t) => t + 1);
+            }}
+          >
+            Clear filters
+          </button>
         </div>
 
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
