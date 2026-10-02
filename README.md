@@ -23,3 +23,13 @@ The first account you register becomes the admin.
 | `npm test` | Server unit tests (node:test) |
 | `npm run seed` | Add sample flights for the next 14 days |
 | `npm run seed:clear` | Remove sample flights that have no bookings |
+
+## Docs
+
+- [API reference](docs/API.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Testing](docs/TESTING.md)
+- [Deployment](docs/DEPLOYMENT.md)
+- [Security](docs/SECURITY.md)
+- [Contributing](docs/CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
