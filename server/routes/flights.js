@@ -86,6 +86,7 @@ router.post("/", requireAdmin, async (req, res, next) => {
 
 router.patch("/:id", requireAdmin, async (req, res, next) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ ok: false, error: "NotFound" });
     const flight = await Flight.findById(req.params.id);
     if (!flight) return res.status(404).json({ ok: false, error: "NotFound" });
     const { price, departAt, arriveAt } = req.body ?? {};
@@ -105,6 +106,7 @@ router.patch("/:id", requireAdmin, async (req, res, next) => {
 
 router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ ok: false, error: "NotFound" });
     const deleted = await Flight.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ ok: false, error: "NotFound" });
     return res.json({ ok: true });
