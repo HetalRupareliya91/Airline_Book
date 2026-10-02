@@ -25,6 +25,7 @@ export default function FlightsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [cities, setCities] = useState<string[]>([]);
+  const [tick, setTick] = useState(0);
 
   const search = useCallback(async () => {
     setLoading(true);
@@ -50,7 +51,7 @@ export default function FlightsPage() {
   useEffect(() => {
     void search();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort]);
+  }, [sort, tick]);
 
   useEffect(() => {
     void (async () => {
@@ -105,6 +106,20 @@ export default function FlightsPage() {
             Max price ₹
             <input className="smart-input w-28" type="number" min={0} value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
           </label>
+          <button
+            type="button"
+            className="smart-ghost-button"
+            onClick={() => {
+              setOrigin("");
+              setDestination("");
+              setDate("");
+              setMaxPrice("");
+              setSort("departure");
+              setTick((t) => t + 1);
+            }}
+          >
+            Clear filters
+          </button>
         </div>
 
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
