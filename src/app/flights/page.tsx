@@ -137,7 +137,7 @@ export default function FlightsPage() {
 
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
 
-        <div className="mt-6 grid gap-4">
+        <div className={`mt-6 grid gap-4 ${loading ? "opacity-60" : ""}`}>
           {flights.map((f) => (
             <article key={f._id} className="glass-panel flex flex-wrap items-center justify-between gap-4 p-5 text-[#123e5f]">
               <div>
