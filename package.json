@@ -2,6 +2,9 @@
   "name": "nextjs",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "concurrently -n web,server -c cyan,magenta \"next dev -p 3000\" \"node server/index.js\"",
     "dev:web": "next dev -p 3000",
