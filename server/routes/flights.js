@@ -1,6 +1,7 @@
 const express = require("express");
 const Flight = require("../models/Flight");
 const { requireAdmin } = require("../lib/auth");
+const { parsePagination, buildMeta } = require("../lib/paginate");
 const { escapeRegex: esc } = require("../lib/escapeRegex");
 const { utcDayRange } = require("../lib/dates");
 
@@ -27,13 +28,12 @@ router.get("/", async (req, res, next) => {
     }
     const SORTS = { price: { price: 1 }, "-price": { price: -1 }, departure: { departAt: 1 }, "-departure": { departAt: -1 } };
     const sort = SORTS[String(req.query.sort || "")] || SORTS.departure;
-    const limit = Math.min(Number.parseInt(String(req.query.limit || "100"), 10) || 100, 100);
-    const page = Math.max(Number.parseInt(String(req.query.page || "1"), 10) || 1, 1);
+    const { page, limit, skip } = parsePagination(req.query, { defaultLimit: 100, maxLimit: 100 });
     const [data, total] = await Promise.all([
-      Flight.find(q).sort(sort).skip((page - 1) * limit).limit(limit),
+      Flight.find(q).sort(sort).skip(skip).limit(limit),
       Flight.countDocuments(q),
     ]);
-    return res.json({ ok: true, data, meta: { page, limit, total, pages: Math.max(Math.ceil(total / limit), 1) } });
+    return res.json({ ok: true, data, meta: buildMeta(page, limit, total) });
   } catch (err) {
     return next(err);
   }
