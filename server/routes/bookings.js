@@ -5,6 +5,7 @@ const Booking = require("../models/Booking");
 const Flight = require("../models/Flight");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 const { seatLabels } = require("../lib/seats");
+const { getConfig } = require("../lib/config");
 const { parsePassengerNames } = require("../lib/passengers");
 
 const router = express.Router();
@@ -110,7 +111,7 @@ router.patch("/:id/cancel", requireAuth, async (req, res, next) => {
     if (req.user.role !== "admin") filter.user = req.user.sub;
     if (req.user.role !== "admin") {
       const existing = await Booking.findOne(filter).populate("flight", "departAt");
-      const hours = Number(process.env.CANCEL_CUTOFF_HOURS ?? 2);
+      const hours = getConfig().cancelCutoffHours;
       if (existing?.flight && existing.flight.departAt.getTime() - Date.now() < hours * 3_600_000) {
         return res.status(403).json({ ok: false, error: "Forbidden", message: `Bookings cannot be cancelled within ${hours} hours of departure.` });
       }
