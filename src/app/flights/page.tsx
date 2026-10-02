@@ -157,6 +157,9 @@ export default function FlightsPage() {
               </div>
             </article>
           ))}
+          {loading && flights.length === 0
+            ? Array.from({ length: 3 }, (_, i) => <div key={i} className="glass-panel h-24 animate-pulse" />)
+            : null}
           {!loading && flights.length === 0 ? <p className="text-sm text-[#416b8a]">No flights found.</p> : null}
         </div>
 
