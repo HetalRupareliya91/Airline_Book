@@ -19,6 +19,7 @@ export default function FlightsPage() {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [date, setDate] = useState("");
+  const [sort, setSort] = useState("departure");
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,6 +32,7 @@ export default function FlightsPage() {
       if (origin) qs.set("origin", origin);
       if (destination) qs.set("destination", destination);
       if (date) qs.set("date", date);
+      qs.set("sort", sort);
       const res = await fetch(`/api/flights?${qs.toString()}`);
       const json = (await res.json()) as { ok: boolean; data?: Flight[]; message?: string };
       if (!res.ok || !json.ok) throw new Error(json.message || "Search failed.");
@@ -40,12 +42,12 @@ export default function FlightsPage() {
     } finally {
       setLoading(false);
     }
-  }, [origin, destination, date]);
+  }, [origin, destination, date, sort]);
 
   useEffect(() => {
     void search();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sort]);
 
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,#c8ebff_0%,#eaf6ff_45%,#f4fbff_100%)] px-6 py-12 sm:px-10 lg:px-20">
