@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { formatDateTime, formatINR } from "@/lib/format";
 
 type Flight = {
   _id: string;
@@ -13,8 +14,6 @@ type Flight = {
   price: number;
   seatsAvailable: number;
 };
-
-const fmt = (iso: string) => new Date(iso).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
 
 export default function FlightsPage() {
   const [origin, setOrigin] = useState("");
@@ -79,12 +78,12 @@ export default function FlightsPage() {
                   {f.origin} → {f.destination}
                 </p>
                 <p className="text-sm text-[#416b8a]">
-                  {f.flightNumber} · {fmt(f.departAt)} – {fmt(f.arriveAt)}
+                  {f.flightNumber} · {formatDateTime(f.departAt)} – {formatDateTime(f.arriveAt)}
                 </p>
                 <p className="text-xs text-[#5e8aa9]">{f.seatsAvailable} seats left</p>
               </div>
               <div className="flex items-center gap-4">
-                <p className="text-2xl font-bold text-[#0f3a59]">₹{f.price.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-[#0f3a59]">{formatINR(f.price)}</p>
                 <Link href={`/flights/${f._id}/book`} className="smart-button">
                   Book
                 </Link>
