@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Flight = require("../models/Flight");
 const { requireAdmin } = require("../lib/auth");
 const { parsePagination, buildMeta } = require("../lib/paginate");
@@ -51,6 +52,7 @@ router.get("/meta/cities", async (_req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ ok: false, error: "NotFound" });
     const doc = await Flight.findById(req.params.id);
     if (!doc) return res.status(404).json({ ok: false, error: "NotFound" });
     return res.json({ ok: true, data: doc });
