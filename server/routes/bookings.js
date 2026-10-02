@@ -5,6 +5,7 @@ const Booking = require("../models/Booking");
 const Flight = require("../models/Flight");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 const { seatLabels } = require("../lib/seats");
+const { parsePagination, buildMeta } = require("../lib/paginate");
 const { getConfig } = require("../lib/config");
 const { parsePassengerNames } = require("../lib/passengers");
 
@@ -96,10 +97,13 @@ router.get("/:id", requireAuth, async (req, res, next) => {
 
 router.get("/", requireAdmin, async (req, res, next) => {
   try {
-    const limit = Math.min(Number.parseInt(String(req.query.limit || "50"), 10) || 50, 200);
+    const { page, limit, skip } = parsePagination(req.query, { defaultLimit: 50, maxLimit: 200 });
     const q = ["confirmed", "cancelled"].includes(String(req.query.status)) ? { status: String(req.query.status) } : {};
-    const data = await Booking.find(q).populate("flight").populate("user", "email").sort({ createdAt: -1 }).limit(limit);
-    return res.json({ ok: true, data });
+    const [data, total] = await Promise.all([
+      Booking.find(q).populate("flight").populate("user", "email").sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Booking.countDocuments(q),
+    ]);
+    return res.json({ ok: true, data, meta: buildMeta(page, limit, total) });
   } catch (err) {
     return next(err);
   }
