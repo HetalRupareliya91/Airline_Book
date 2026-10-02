@@ -24,6 +24,7 @@ export default function FlightsPage() {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [cities, setCities] = useState<string[]>([]);
 
   const search = useCallback(async () => {
     setLoading(true);
@@ -51,6 +52,18 @@ export default function FlightsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sort]);
 
+  useEffect(() => {
+    void (async () => {
+      try {
+        const res = await fetch("/api/flights/meta/cities");
+        const json = (await res.json()) as { ok: boolean; data?: string[] };
+        if (json.ok && json.data) setCities(json.data);
+      } catch {
+        // suggestions are optional
+      }
+    })();
+  }, []);
+
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_0%,#c8ebff_0%,#eaf6ff_45%,#f4fbff_100%)] px-6 py-12 sm:px-10 lg:px-20">
       <div className="mx-auto w-full max-w-5xl rounded-[2rem] border border-[#a9d8f7] bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(225,242,255,0.88))] p-7 md:p-10">
@@ -64,13 +77,19 @@ export default function FlightsPage() {
           }}
           className="mt-6 grid gap-3 sm:grid-cols-4"
         >
-          <input className="smart-input" placeholder="From" value={origin} onChange={(e) => setOrigin(e.target.value)} />
-          <input className="smart-input" placeholder="To" value={destination} onChange={(e) => setDestination(e.target.value)} />
+          <input className="smart-input" list="cities" placeholder="From" value={origin} onChange={(e) => setOrigin(e.target.value)} />
+          <input className="smart-input" list="cities" placeholder="To" value={destination} onChange={(e) => setDestination(e.target.value)} />
           <input className="smart-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           <button className="smart-button" type="submit" disabled={loading}>
             {loading ? "Searching..." : "Search"}
           </button>
         </form>
+
+        <datalist id="cities">
+          {cities.map((city) => (
+            <option key={city} value={city} />
+          ))}
+        </datalist>
 
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-[#2f6388]">
           <label className="flex items-center gap-2">
