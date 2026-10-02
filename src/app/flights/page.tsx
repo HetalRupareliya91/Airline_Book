@@ -77,13 +77,19 @@ export default function FlightsPage() {
           }}
           className="mt-6 grid gap-3 sm:grid-cols-4"
         >
-          <input className="smart-input" placeholder="From" value={origin} onChange={(e) => setOrigin(e.target.value)} />
-          <input className="smart-input" placeholder="To" value={destination} onChange={(e) => setDestination(e.target.value)} />
+          <input className="smart-input" list="cities" placeholder="From" value={origin} onChange={(e) => setOrigin(e.target.value)} />
+          <input className="smart-input" list="cities" placeholder="To" value={destination} onChange={(e) => setDestination(e.target.value)} />
           <input className="smart-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           <button className="smart-button" type="submit" disabled={loading}>
             {loading ? "Searching..." : "Search"}
           </button>
         </form>
+
+        <datalist id="cities">
+          {cities.map((city) => (
+            <option key={city} value={city} />
+          ))}
+        </datalist>
 
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-[#2f6388]">
           <label className="flex items-center gap-2">
