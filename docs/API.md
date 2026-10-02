@@ -19,6 +19,7 @@ Auth uses an httpOnly `token` cookie set by login/register.
 - `POST /api/bookings` - `{ flightId, passengers: [{ name }], seatNumbers?: ["3A"] }`. Seats are reserved atomically; 409 if taken.
 - `GET /api/bookings/mine` - your bookings.
 - `GET /api/bookings/:id` - one booking (owner or admin).
+- `GET /api/bookings/stats` - admin. `{ confirmedBookings, cancelledBookings, revenue, flights, occupancyPercent }`.
 - `PATCH /api/bookings/:id/cancel` - owner or admin. Users cannot cancel within `CANCEL_CUTOFF_HOURS` (default 2) of departure.
 - `GET /api/bookings` - admin, all bookings. Query: `status` (confirmed or cancelled), `page`, `limit`. Returns `meta`.
 
