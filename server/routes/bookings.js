@@ -97,7 +97,8 @@ router.get("/:id", requireAuth, async (req, res, next) => {
 router.get("/", requireAdmin, async (req, res, next) => {
   try {
     const limit = Math.min(Number.parseInt(String(req.query.limit || "50"), 10) || 50, 200);
-    const data = await Booking.find().populate("flight").populate("user", "email").sort({ createdAt: -1 }).limit(limit);
+    const q = ["confirmed", "cancelled"].includes(String(req.query.status)) ? { status: String(req.query.status) } : {};
+    const data = await Booking.find(q).populate("flight").populate("user", "email").sort({ createdAt: -1 }).limit(limit);
     return res.json({ ok: true, data });
   } catch (err) {
     return next(err);
