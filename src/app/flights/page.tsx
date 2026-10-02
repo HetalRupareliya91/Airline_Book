@@ -25,6 +25,7 @@ export default function FlightsPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [cities, setCities] = useState<string[]>([]);
+  const [tick, setTick] = useState(0);
 
   const search = useCallback(async () => {
     setLoading(true);
@@ -50,7 +51,7 @@ export default function FlightsPage() {
   useEffect(() => {
     void search();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort]);
+  }, [sort, tick]);
 
   useEffect(() => {
     void (async () => {
