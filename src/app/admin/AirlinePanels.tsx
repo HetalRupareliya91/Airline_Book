@@ -99,6 +99,7 @@ export function FlightsPanel() {
 
 export function BookingsPanel() {
   const [items, setItems] = useState<Booking[]>([]);
+  const [status, setStatus] = useState("all");
   const load = useCallback(async () => {
     const res = await fetch("/api/bookings?limit=200");
     const json = (await res.json()) as Api<Booking[]>;
@@ -117,7 +118,12 @@ export function BookingsPanel() {
         {items.filter((b) => b.status === "confirmed").length} confirmed · Revenue ₹
         {items.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + b.totalPrice, 0).toLocaleString("en-IN")}
       </p>
-      {items.map((b) => (
+      <select className="smart-input w-48" value={status} onChange={(e) => setStatus(e.target.value)}>
+        <option value="all">All statuses</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      {items.filter((b) => status === "all" || b.status === status).map((b) => (
         <article key={b._id} className="glass-panel flex flex-wrap items-start justify-between gap-3 p-5 text-[#123e5f]">
           <div>
             <p className="text-lg font-bold text-[#0f3a59]">{b.reference} · {b.flight ? `${b.flight.origin} → ${b.flight.destination}` : "Flight removed"}</p>
