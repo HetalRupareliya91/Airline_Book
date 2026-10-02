@@ -49,6 +49,13 @@ export default function BookingsPage() {
         <p className="heading-kicker">Account</p>
         <h1 className="mt-2 text-4xl font-bold text-[#0d2f4c]">My bookings</h1>
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
+        <div className="mt-6 flex gap-2">
+          {(["all", "upcoming", "cancelled"] as const).map((t) => (
+            <button key={t} className={tab === t ? "smart-button" : "smart-ghost-button"} onClick={() => setTab(t)}>
+              {t[0].toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
         <div className="mt-6 grid gap-4">
           {visible.map((b) => (
             <article key={b._id} className="glass-panel flex flex-wrap items-start justify-between gap-3 p-5 text-[#123e5f]">
@@ -75,7 +82,7 @@ export default function BookingsPage() {
               </div>
             </article>
           ))}
-          {items.length === 0 && !error ? <p className="text-sm text-[#416b8a]">
+          {visible.length === 0 && !error ? <p className="text-sm text-[#416b8a]">
               No bookings yet.{" "}
               <Link href="/flights" className="font-semibold underline">Find a flight</Link>
             </p> : null}
