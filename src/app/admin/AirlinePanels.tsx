@@ -84,7 +84,10 @@ export function FlightsPanel() {
         <article key={f._id} className="glass-panel flex flex-wrap items-center justify-between gap-3 p-5 text-[#123e5f]">
           <div>
             <p className="text-lg font-bold text-[#0f3a59]">{f.flightNumber} · {f.origin} → {f.destination}</p>
-            <p className="text-sm text-[#416b8a]">{new Date(f.departAt).toLocaleString()} · ₹{f.price} · {f.seatsAvailable}/{f.seatsTotal} seats</p>
+            <p className="text-sm text-[#416b8a]">{new Date(f.departAt).toLocaleString()} · ₹{f.price} · {f.seatsTotal - f.seatsAvailable}/{f.seatsTotal} seats sold</p>
+            <div className="mt-2 h-2 w-48 overflow-hidden rounded-full bg-[#d6ebfb]">
+              <div className="h-full bg-[#1492df]" style={{ width: `${Math.round(((f.seatsTotal - f.seatsAvailable) / f.seatsTotal) * 100)}%` }} />
+            </div>
           </div>
           <div className="flex gap-2">
             <button className="smart-ghost-button" onClick={() => void editPrice(f)}>Edit price</button>
