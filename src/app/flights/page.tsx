@@ -147,7 +147,9 @@ export default function FlightsPage() {
                 <p className="text-sm text-[#416b8a]">
                   {f.flightNumber} · {formatDateTime(f.departAt)} – {formatDateTime(f.arriveAt)} · {formatDuration(f.departAt, f.arriveAt)}
                 </p>
-                <p className="text-xs text-[#5e8aa9]">{f.seatsAvailable} seats left</p>
+                <p className={`text-xs ${f.seatsAvailable <= 10 ? "font-bold text-[#b54708]" : "text-[#5e8aa9]"}`}>
+                  {f.seatsAvailable <= 10 ? `Only ${f.seatsAvailable} left!` : `${f.seatsAvailable} seats left`}
+                </p>
               </div>
               <div className="flex items-center gap-4">
                 <p className="text-2xl font-bold text-[#0f3a59]">{formatINR(f.price)}</p>
