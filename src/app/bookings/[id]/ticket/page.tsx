@@ -22,6 +22,7 @@ export default function TicketPage() {
   const { id } = useParams<{ id: string }>();
   const [b, setB] = useState<Booking | null>(null);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     void (async () => {
