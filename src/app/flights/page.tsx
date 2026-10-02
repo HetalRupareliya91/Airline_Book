@@ -79,7 +79,8 @@ export default function FlightsPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void search();
+            if (page !== 1) setPage(1);
+            else void search();
           }}
           className="mt-6 grid gap-3 sm:grid-cols-4"
         >
@@ -100,7 +101,10 @@ export default function FlightsPage() {
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-[#2f6388]">
           <label className="flex items-center gap-2">
             Sort by
-            <select className="smart-input" value={sort} onChange={(e) => setSort(e.target.value)}>
+            <select className="smart-input" value={sort} onChange={(e) => {
+                setSort(e.target.value);
+                setPage(1);
+              }}>
               <option value="departure">Earliest departure</option>
               <option value="-departure">Latest departure</option>
               <option value="price">Lowest price</option>
@@ -120,6 +124,7 @@ export default function FlightsPage() {
               setDate("");
               setMaxPrice("");
               setSort("departure");
+              setPage(1);
               setTick((t) => t + 1);
             }}
           >
