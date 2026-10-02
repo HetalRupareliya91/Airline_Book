@@ -11,6 +11,7 @@ type Booking = {
   seats: number;
   totalPrice: number;
   status: "confirmed" | "cancelled";
+  seatNumbers?: string[];
   flight: { origin: string; destination: string; departAt: string; flightNumber: string } | null;
 };
 
