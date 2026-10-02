@@ -5,6 +5,7 @@ const Booking = require("../models/Booking");
 const Flight = require("../models/Flight");
 const { requireAuth, requireAdmin } = require("../lib/auth");
 const { seatLabels } = require("../lib/seats");
+const { summarizeStats } = require("../lib/stats");
 const { parsePagination, buildMeta } = require("../lib/paginate");
 const { getConfig } = require("../lib/config");
 const { parsePassengerNames } = require("../lib/passengers");
@@ -77,6 +78,19 @@ router.get("/mine", requireAuth, async (req, res, next) => {
   try {
     const data = await Booking.find({ user: req.user.sub }).populate("flight").sort({ createdAt: -1 });
     return res.json({ ok: true, data });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+// Numbers for the admin dashboard
+router.get("/stats", requireAdmin, async (_req, res, next) => {
+  try {
+    const [byStatus, flightTotals] = await Promise.all([
+      Booking.aggregate([{ $group: { _id: "$status", count: { $sum: 1 }, revenue: { $sum: "$totalPrice" } } }]),
+      Flight.aggregate([{ $group: { _id: null, flights: { $sum: 1 }, seatsTotal: { $sum: "$seatsTotal" }, seatsAvailable: { $sum: "$seatsAvailable" } } }]),
+    ]);
+    return res.json({ ok: true, data: summarizeStats(byStatus, flightTotals) });
   } catch (err) {
     return next(err);
   }
