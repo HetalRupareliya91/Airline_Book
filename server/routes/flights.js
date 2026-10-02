@@ -1,10 +1,10 @@
 const express = require("express");
 const Flight = require("../models/Flight");
 const { requireAdmin } = require("../lib/auth");
+const { escapeRegex: esc } = require("../lib/escapeRegex");
 const { utcDayRange } = require("../lib/dates");
 
 const router = express.Router();
-const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // Public search: /api/flights?origin=&destination=&date=YYYY-MM-DD
 router.get("/", async (req, res, next) => {
