@@ -84,9 +84,9 @@ export default function FlightsPage() {
           }}
           className="mt-6 grid gap-3 sm:grid-cols-4"
         >
-          <input className="smart-input" list="cities" placeholder="From" value={origin} onChange={(e) => setOrigin(e.target.value)} />
-          <input className="smart-input" list="cities" placeholder="To" value={destination} onChange={(e) => setDestination(e.target.value)} />
-          <input className="smart-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <input className="smart-input" list="cities" placeholder="From" aria-label="From city" value={origin} onChange={(e) => setOrigin(e.target.value)} />
+          <input className="smart-input" list="cities" placeholder="To" aria-label="To city" value={destination} onChange={(e) => setDestination(e.target.value)} />
+          <input className="smart-input" type="date" aria-label="Departure date" value={date} onChange={(e) => setDate(e.target.value)} />
           <button className="smart-button" type="submit" disabled={loading}>
             {loading ? "Searching..." : "Search"}
           </button>
