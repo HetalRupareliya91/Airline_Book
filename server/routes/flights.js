@@ -1,6 +1,7 @@
 const express = require("express");
 const Flight = require("../models/Flight");
 const { requireAdmin } = require("../lib/auth");
+const { utcDayRange } = require("../lib/dates");
 
 const router = express.Router();
 const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -16,11 +17,11 @@ router.get("/", async (req, res, next) => {
     if (origin) q.origin = new RegExp(esc(origin), "i");
     if (destination) q.destination = new RegExp(esc(destination), "i");
     if (date) {
-      const start = new Date(`${date}T00:00:00.000Z`);
-      if (Number.isNaN(start.getTime())) {
+      const range = utcDayRange(date);
+      if (!range) {
         return res.status(400).json({ ok: false, error: "BadRequest", message: "date must be YYYY-MM-DD." });
       }
-      q.departAt = { $gte: start, $lt: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
+      q.departAt = { $gte: range.start, $lt: range.end };
     } else {
       q.departAt = { $gte: new Date() };
     }
