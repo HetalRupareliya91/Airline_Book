@@ -120,6 +120,9 @@ export default function FlightsPage() {
           >
             Clear filters
           </button>
+          <button type="button" className="smart-ghost-button" onClick={() => { setOrigin(destination); setDestination(origin); }}>
+            ⇄ Swap cities
+          </button>
         </div>
 
         {error ? <p className="mt-4 text-sm font-semibold text-[#b42318]">{error}</p> : null}
