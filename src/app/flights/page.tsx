@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { formatDateTime, formatINR } from "@/lib/format";
+import { formatDateTime, formatDuration, formatINR } from "@/lib/format";
 
 type Flight = {
   _id: string;
@@ -78,7 +78,7 @@ export default function FlightsPage() {
                   {f.origin} → {f.destination}
                 </p>
                 <p className="text-sm text-[#416b8a]">
-                  {f.flightNumber} · {formatDateTime(f.departAt)} – {formatDateTime(f.arriveAt)}
+                  {f.flightNumber} · {formatDateTime(f.departAt)} – {formatDateTime(f.arriveAt)} · {formatDuration(f.departAt, f.arriveAt)}
                 </p>
                 <p className="text-xs text-[#5e8aa9]">{f.seatsAvailable} seats left</p>
               </div>
