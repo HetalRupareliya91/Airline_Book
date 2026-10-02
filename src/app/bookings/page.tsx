@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { formatDateTime, formatINR } from "@/lib/format";
 
 type Booking = {
   _id: string;
@@ -50,11 +51,11 @@ export default function BookingsPage() {
                   {b.flight ? `${b.flight.origin} → ${b.flight.destination}` : "Flight removed"}
                 </p>
                 <p className="text-sm text-[#416b8a]">
-                  Ref {b.reference} · {b.flight ? new Date(b.flight.departAt).toLocaleString() : ""}
+                  Ref {b.reference} · {b.flight ? formatDateTime(b.flight.departAt) : ""}
                 </p>
                 <p className="text-sm text-[#2f6388]">{b.passengers.map((p) => p.name).join(", ")}</p>
                 <p className="text-sm font-semibold text-[#0f3a59]">
-                  ₹{b.totalPrice.toLocaleString()} · {b.status}
+                  {formatINR(b.totalPrice)} · {b.status}
                 </p>
               </div>
               <div className="flex gap-2">

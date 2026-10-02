@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { formatINR } from "@/lib/format";
 
 type Booking = {
   reference: string;
@@ -65,7 +66,7 @@ export default function TicketPage() {
                   <li key={i}>{p.name}{b.seatNumbers?.[i] ? ` — Seat ${b.seatNumbers[i]}` : ""}</li>
                 ))}
               </ol>
-              <p className="mt-6 text-xl font-bold text-[#0f3a59]">Total paid: ₹{b.totalPrice.toLocaleString()}</p>
+              <p className="mt-6 text-xl font-bold text-[#0f3a59]">Total paid: {formatINR(b.totalPrice)}</p>
               <p className="mt-1 text-xs text-[#5e8aa9]">Booked on {new Date(b.createdAt).toLocaleString()}</p>
             </div>
 
