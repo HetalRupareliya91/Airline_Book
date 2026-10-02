@@ -11,6 +11,7 @@ type Booking = {
   seats: number;
   totalPrice: number;
   status: "confirmed" | "cancelled";
+  seatNumbers?: string[];
   flight: { origin: string; destination: string; departAt: string; flightNumber: string } | null;
 };
 
@@ -53,9 +54,12 @@ export default function BookingsPage() {
                 <p className="text-sm text-[#416b8a]">
                   Ref {b.reference} · {b.flight ? formatDateTime(b.flight.departAt) : ""}
                 </p>
-                <p className="text-sm text-[#2f6388]">{b.passengers.map((p) => p.name).join(", ")}</p>
+                <p className="text-sm text-[#2f6388]">{b.passengers.map((p, i) => (b.seatNumbers?.[i] ? `${p.name} (${b.seatNumbers[i]})` : p.name)).join(", ")}</p>
                 <p className="text-sm font-semibold text-[#0f3a59]">
-                  {formatINR(b.totalPrice)} · {b.status}
+                  {formatINR(b.totalPrice)} ·{" "}
+                  <span className={`rounded-full px-2 py-0.5 text-xs ${b.status === "confirmed" ? "bg-[#d1fadf] text-[#05603a]" : "bg-[#fee4e2] text-[#b42318]"}`}>
+                    {b.status}
+                  </span>
                 </p>
               </div>
               <div className="flex gap-2">
