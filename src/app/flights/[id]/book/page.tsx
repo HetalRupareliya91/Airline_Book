@@ -93,6 +93,7 @@ export default function BookPage() {
                 className="smart-input flex-1"
                 placeholder={`Passenger ${i + 1} full name`}
                 required
+                minLength={2}
                 value={n}
                 onChange={(e) => changeCount(names.map((x, j) => (j === i ? e.target.value : x)))}
               />
